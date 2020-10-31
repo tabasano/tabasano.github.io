@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<title>move</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+$(function(){
+  op=0.2
+  $("*").mousemove(function(e){
+    op+=0.001;
+    op%=1;
+    a=Math.floor(e.pageX/100);
+    b=Math.floor(e.pageY/100);
+    c=Math.floor((a+b)/2);
+    d=Math.floor(10-c);
+    x=e.pageX-50+"px",
+    y=e.pageY-50+"px",
+    $("#article1").css({
+      bottom: y,
+      right: x,
+      background: "#"+a+a+b+b+c+b,
+      opacity: (op+0.0)%0.9+0.1
+    });
+    $("#article2").css({
+      top: y,
+      left: x,
+      background: "#"+c+c+b+b+a+b,
+      opacity: (op+0.3)%0.9+0.1
+    });
+    $("#article3").css({
+      top: y,
+      right: x,
+      background: "#"+b+a+c+a+b+b,
+      opacity: (op+0.6)%0.9+0.1
+    });
+    $("#article4").css({
+      bottom: y,
+      left: x,
+      background: "#"+b+a+a+b+a+b,
+      opacity: (op+0.8)%0.9+0.1
+    });
+    $("article>div").css({
+      background: "#"+d+d+b+d+a+d
+    });
+    $("body").css({
+      background: "#"+c+d+d+d+b+d
+    });
+  }).click(function(){
+  });
+
+});
+</script>
+<style>
+body {
+  background: cyan;
+}
+div {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+article {
+  opacity: 0.2;
+  position: absolute;
+}
+</style>
+</head>
+<body>
+<article id="article4">
+<div>test article</div>
+<p>abcd</p>
+</article>
+<article id="article3">
+<div>test article</div>
+<p>efgh</p>
+</article>
+<article id="article1">
+<div>test article</div>
+<p>ijkl</p>
+</article>
+<article id="article2">
+<div>test article</div>
+<p>mnop</p>
+</article>
+</body>
+</html>
+
