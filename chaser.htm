@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+<title>chase</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+// ver 3.0
+var count=0;
+var st=localStorage;
+function rgb(a,b,c)
+{
+  return "rgb("+a+","+b+","+c+")";
+}
+$(function(){
+  op=0.2;
+  histmax=1000;
+  $("*").mousemove(function(e){
+    op+=0.001;
+    op%=1;
+    sX=e.screenX;
+    sY=e.screenY;
+    count+=1;
+    count%=histmax;
+    a=Math.floor(e.pageX*255/sX);
+    b=Math.floor(e.pageY*255/sY);
+    c=Math.floor(Math.abs(((a+b)%255)*2-255));
+    d=Math.floor(255-c);
+    x=e.pageX-50+"px",
+    y=e.pageY-50+"px",
+    st["x_"+count]=x;
+    st["y_"+count]=y;
+    hist={};
+    num=4;
+    for(i=0;i<num;i++){
+      re=(count+histmax-50*i)%histmax;
+      pos={};
+      pos.x=st.getItem("x_"+re);
+      pos.y=st.getItem("y_"+re);
+      hist[i]=pos;
+    }
+console.log(a,b,c);
+    $("#article1").css({
+      top: y,
+      left: x,
+      background: rgb(a,b,c),
+      opacity: (op+0.0)%0.9+0.1
+    });
+    for(i=0;i<num;i++){
+      tmp=a;
+      a=b;
+      b=c;
+      c=tmp;
+      $("#article"+(i+1)).css({
+        top: hist[i].y,
+        left: hist[i].x,
+        background: rgb(b,a,c),
+        opacity: (op+0.3)%0.9+0.1
+      });
+    }
+    $("article>div").css({
+      background: rgb(d,a,b)
+    });
+    $("body").css({
+      background: rgb(c,d,b)
+    });
+  }).dblclick(function(){
+      alert(rgb(c,d,b));
+      return false;
+  }).click(function(){
+    $("article").attr({
+      hidden: "hidden"
+    });
+  });
+
+});
+</script>
+<style>
+body {
+  background: cyan;
+}
+div {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+article {
+  opacity: 0.2;
+  position: absolute;
+}
+</style>
+</head>
+<body>
+<article id="article1">
+<div>test article</div>
+<p>ijkl</p>
+</article>
+<article id="article2">
+<div>test article</div>
+<p>mnop</p>
+</article>
+<article id="article3">
+<div>test article</div>
+<p>efgh</p>
+</article>
+<article id="article4">
+<div>test article</div>
+<p>abcd</p>
+</article>
+</body>
+</html>
+
