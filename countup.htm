@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<title>zoom</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script>
+$.prototype.countdisp=function (count){
+  selector="p:eq(1),#article1 :eq(1)";
+  rui=count**2;
+  $(selector).text(rui);
+  $("p:first").text(count);
+  if(count%30==0){
+    $("p:eq(1)").animate({
+      "font-size": "500px"
+    },"slow","linear");
+  } else if(count%30<25){
+    $("p:eq(1)").css({
+      "font-size": "0px"
+    });
+  } else {
+    $("p:eq(1)").css({
+      "font-size": "10px"
+    });
+  }
+};
+let count=0;
+let counter=0;
+let st=localStorage;
+function rgb(a,b,c)
+{
+  return "rgb("+a+","+b+","+c+")";
+}
+$(function(){
+  op=0.2;
+  histmax=1000;
+  $("*").mousemove(function(e){
+    op+=0.001;
+    op%=1;
+    sX=e.screenX;
+    sY=e.screenY;
+    counter+=1;
+    count+=1;
+    count%=histmax;
+    a=Math.floor(e.pageX*255/sX);
+    b=Math.floor(e.pageY*255/sY);
+    c=Math.floor(Math.abs(((a+b)%255)*2-255));
+    d=Math.floor(255-c);
+    x=e.pageX-50+"px",
+    y=e.pageY-50+"px",
+    st["x_"+count]=x;
+    st["y_"+count]=y;
+    hist={};
+    num=1;
+    for(i=0;i<num;i++){
+      re=(count+histmax-50*i)%histmax;
+      pos={};
+      pos.x=st.getItem("x_"+re);
+      pos.y=st.getItem("y_"+re);
+      hist[i]=pos;
+    }
+    $().countdisp(counter);
+console.log(a,b,c);
+    $("#article1").css({
+      top: y,
+      left: x,
+      background: rgb(a,b,c),
+      opacity: (op+0.0)%0.9+0.1
+    });
+    $("article>div").css({
+      background: rgb(d,a,b)
+    });
+    $("body").css({
+      background: rgb(c,d,b)
+    });
+  }).dblclick(function(){
+      alert(rgb(c,d,b));
+      return false;
+  }).click(function(){
+    $("article").attr({
+      hidden: "hidden"
+    });
+    $(this).click(function(){
+      $("article").attr({
+        hidden: false
+      });
+    });
+  });
+
+});
+</script>
+<style>
+body {
+  position: relative;
+  background: cyan;
+}
+p {
+  position: relative;
+  color: rgb(12,34,156);
+}
+p.zoom {
+  position: relative;
+  text-align: center;
+  color: rgb(134,212,212);
+}
+div {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+article {
+  opacity: 0.2;
+  position: absolute;
+}
+</style>
+</head>
+<body>
+<p></p>
+<p class="zoom"></p>
+<article id="article1">
+<div>test article</div>
+<p>ijkl</p>
+</article>
+</body>
+</html>
+
