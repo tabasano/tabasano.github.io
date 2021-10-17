@@ -125,9 +125,9 @@ function log()
 {
   console.log(localStorage);
 }
-function listup(ks)
+function listpart_by_memokey(ks)
 {
-  document.querySelector("#list_part").innerHTML=ks.map(
+  return ks.map(
       key=>{
         let maxlength=25;
         let size=localStorage[key].length;
@@ -136,7 +136,25 @@ function listup(ks)
         return keypart+":"+localStorage[key].substring(0,maxlength)+"("+size+")" ;
       }
     ).join("<br>");
-  edit(ks[0]);
+}
+function listpart_by_tagkey(ks)
+{
+  return ks.map(
+      key=>{
+        let maxlength=25;
+        let size=localStorage[key].length;
+        let title=key.substring(2);
+        keypart="<button onClick='view_item(\""+key+"\")'>"+title+"</button>";
+        return keypart+"-> "+tag2itemlink(key);
+      }
+    ).join("<br>");
+}
+function get_tag_keys()
+{
+  ks=Object.keys(localStorage).filter(key=>{
+    return key.match(/^t_/);
+  }).sort();
+  return ks;
 }
 function get_memo_keys()
 {
@@ -332,7 +350,16 @@ function search()
     rg=new RegExp(ans, 'i');
     ks=get_memo_keys().filter(key=>{return key.match(rg)||localStorage[key].match(rg);}).sort();
     //console.log(ans,rg,ks,ks.map(k=>localStorage[k]));
-    listup(ks);
+    list=`<div class='result'>「${ans} 」の検索結果</div>`;
+    list+="memo<br>";
+    list+=listpart_by_memokey(ks);
+    list+="<br>tag<br>";
+    rg=new RegExp("^t_.*"+ans, 'i');
+    ks2=get_tag_keys().filter(key=>{return key.match(rg);}).sort();
+    list+=listpart_by_tagkey(ks2);
+    document.querySelector("#list_part").innerHTML=list;
+    document.querySelector(".result").style.color="red";
+    edit(ks[0]);
   }
 }
 function tag2itemlink(key)
@@ -345,18 +372,14 @@ function tag2itemlink(key)
 }
 function tags(tag)
 {
-  rg=new RegExp("^t_");
-  if(tag) rg=new RegExp("^t_"+tag+"$");
-  ks=Object.keys(localStorage).filter(key=>{return key.match(rg)||localStorage[key].match(rg);}).sort();
-  list=ks.map(
-      key=>{
-        let maxlength=25;
-        let size=localStorage[key].length;
-        let title=key.substring(2);
-        keypart="<button onClick='view_item(\""+key+"\")'>"+title+"</button>";
-        return keypart+"-> "+tag2itemlink(key);
-      }
-    ).join("<br>");
+  if(tag) {
+    str="t_"+tag;
+    ks=Object.keys(localStorage).filter(key=>key===str).sort();
+  } else {
+    str="t_";
+    ks=Object.keys(localStorage).filter(key=>{return key.startsWith(str)||localStorage[key].startsWith(str);}).sort();
+  }
+  list=listpart_by_tagkey(ks);
   document.querySelector("#list_part").innerHTML=list;
 }
 function tag2keys(tag)
@@ -397,10 +420,10 @@ function info()
 }
 function submenu()
 {
-  let submenu='<button onClick=\'if(confirm(cache_size()+" data reset, really?")){reset_ls();counter();};\'>reset</button>'+
-          '<button onClick=\'export2file("export.txt");\'>export</button>'+
-          '<button onClick=\'file2import();\'>import</button>'+
-          '<button onClick=\'info();\'>?</button>';
+  let submenu=`<button onClick='if(confirm(cache_size()+" data reset, really?")){reset_ls();counter();};'>reset</button>
+          <button onClick='export2file("export.txt");'>export</button>
+          <button onClick='file2import();'>import</button>
+          <button onClick='info();'>?</button>`;
   document.querySelector("#list_part").innerHTML="sub menu: "+submenu;
 }
 </script>
