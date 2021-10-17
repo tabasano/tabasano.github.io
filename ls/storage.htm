@@ -141,7 +141,7 @@ function listup(ks)
 function get_item_keys()
 {
   ks=Object.keys(localStorage).filter(key=>{
-    return (key.slice(0,1)!="T" && key!="count" && key.slice(0,2)!="t_");
+    return key.match(/^\d+-\d+-/);
   }).sort();
   console.log(ks.length);
   return ks;
