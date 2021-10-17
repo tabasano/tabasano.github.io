@@ -97,7 +97,7 @@ function get_percent()
 }
 function set_percent_hint()
 {
-  let page=get_item_keys().length;
+  let page=get_memo_keys().length;
   document.querySelector(".limit_hint").innerText=get_percent()+"%"+page+"枚";
 }
 function limit_check()
@@ -138,17 +138,17 @@ function listup(ks)
     ).join("<br>");
   edit(ks[0]);
 }
-function get_item_keys()
+function get_memo_keys()
 {
   ks=Object.keys(localStorage).filter(key=>{
+    //return (key.slice(0,1)!="T" && key!="count" && key.slice(0,2)!="t_");
     return key.match(/^\d+-\d+-/);
   }).sort();
-  console.log(ks.length);
   return ks;
 }
 function all_item()
 {
-  ks=get_item_keys();
+  ks=get_memo_keys();
   list=ks.map(
       key=>{
         let maxlength=25;
@@ -171,7 +171,7 @@ function disp()
   length=stepcount;
   pos2=pos1+length;
   //console.log(pos1,pos2);
-  ks=get_item_keys();
+  ks=get_memo_keys();
   list=ks.slice(pos1,pos2).map(
       key=>{
         let maxlength=25;
@@ -207,7 +207,7 @@ function reload()
 }
 function click_fnc(fnc,arg,desc)
 {
-  return "<button onClick='"+fnc+"(\""+arg+"\");reload();'>"+desc+"</button>";
+  return "<button onClick=\""+fnc+"('"+arg+"');\">"+desc+"</button>";
 }
 function edit(key)
 {
@@ -216,9 +216,11 @@ function edit(key)
   document.querySelector("textarea").value=unescape_html(val);
   //clear();
   let hint="(new)";
-  edit_title_part="<button onClick='edit_title(\""+key+"\");reload();'>title?</button>"
-                 +"<button onClick='edit_tag(\""+key+"\");reload();'>tag?</button>"
-                 +item2tags(key).map(i=>{return click_fnc("edit",i,i);}).join(",");
+  edit_title_part="<button onClick='edit_title(\""+key+"\");reload();'>title?</button>"+
+                  "(tag: "+
+                  item2tags(key).map(i=>{return click_fnc("tags",i,i);}).join(",")+
+                  ")"+
+                  "<button onClick='edit_tag(\""+key+"\");reload();'>+tag</button>";
   hint="<h2>"+get_title(key) + " " + edit_title_part +"</h2>"+key;
   document.querySelector(".text_hint").innerHTML=hint;
 }
@@ -328,30 +330,31 @@ function search()
 {
   if(ans=prompt("search","")){
     rg=new RegExp(ans, 'i');
-    ks=Object.keys(localStorage).filter(key=>{return key.match(rg)||localStorage[key].match(rg);}).sort();
+    ks=get_memo_keys().filter(key=>{return key.match(rg)||localStorage[key].match(rg);}).sort();
     //console.log(ans,rg,ks,ks.map(k=>localStorage[k]));
     listup(ks);
   }
 }
 function tag2itemlink(key)
 {
-  items=localStorage[key].split(",");
+  items=localStorage[key].split(",").filter(k=>k.length>0);
   return items.map(k=>{
       title=get_title(k);
       return "<button onClick='view_item(\""+k+"\")'>"+title+"</button>";
     }).join(",");
 }
-function tags()
+function tags(tag)
 {
-    rg=new RegExp("^t_");
-    ks=Object.keys(localStorage).filter(key=>{return key.match(rg)||localStorage[key].match(rg);}).sort();
+  rg=new RegExp("^t_");
+  if(tag) rg=new RegExp("^t_"+tag+"$");
+  ks=Object.keys(localStorage).filter(key=>{return key.match(rg)||localStorage[key].match(rg);}).sort();
   list=ks.map(
       key=>{
         let maxlength=25;
         let size=localStorage[key].length;
         let title=key.substring(2);
         keypart="<button onClick='view_item(\""+key+"\")'>"+title+"</button>";
-        return keypart+tag2itemlink(key);
+        return keypart+"-> "+tag2itemlink(key);
       }
     ).join("<br>");
   document.querySelector("#list_part").innerHTML=list;
@@ -392,6 +395,14 @@ function info()
 {
   alert("メモ帳：ローカル(localStorage)に保存します。5MBまで（ブラウザによります）");
 }
+function submenu()
+{
+  let submenu='<button onClick=\'if(confirm(cache_size()+" data reset, really?")){reset_ls();counter();};\'>reset</button>'+
+          '<button onClick=\'export2file("export.txt");\'>export</button>'+
+          '<button onClick=\'file2import();\'>import</button>'+
+          '<button onClick=\'info();\'>?</button>';
+  document.querySelector("#list_part").innerHTML="sub menu: "+submenu;
+}
 </script>
 <button onClick='new_item();'>新規作成</button>
 <!--
@@ -411,10 +422,7 @@ function info()
 <!--
 <button onClick='limit_check();'>limit check</button>
 -->
-<button onClick='if(confirm(cache_size()+" data reset, really?")){reset_ls();counter();};'>reset</button>
-<button onClick='export2file("export.txt");'>export</button>
-<button onClick='file2import();'>import</button>
-<button onClick='info();'>?</button>
+<button onClick='submenu();'>v</button>
 <span class="limit_hint"></span>
 <hr>
 <div id="list_part">test
@@ -435,4 +443,3 @@ function info()
 </script>
 </body>
 </html>
-
