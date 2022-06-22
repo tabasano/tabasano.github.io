@@ -124,8 +124,16 @@ function bodyback(){x=date0();
   if(key==1){return 'blue'}
 }
 
-function showt(){sel=document.querySelectorAll('div')[0];sel.innerText=nt();sel.style.color=ntcolor();sel.style.background=bgcolor();document.body.style.background=bodyback();}
-t1=setInterval(showt,1000/2/global.r);
+function showt(){
+  sel=document.querySelectorAll('div')[0];
+  sel.innerText=nt();
+  sel.style.color=ntcolor();
+  sel.style.background=bgcolor();
+  document.body.style.background=bodyback();
+  sel.style.transform="rotate("+(x.getSeconds()*6+270)+"deg)"
+}
+
+  t1=setInterval(showt,1000/2/global.r);
 
 //clearTimeout(t1);
 
