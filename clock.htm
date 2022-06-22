@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+<div id="clock" style="font-size: 12em; margin: 2em; display: inline-block; height: 2em;"></div>
+<script>
+let test=false;
+let global={};
+global.r=1;
+if(test){
+  global.r=160;
+}
+
+function date0()
+{
+  r=global.r;
+  return new Date((new Date()).getTime()*r);
+}
+function ff(t){return ('0'+t).slice(-2);}
+function getC(h)
+{
+  let chr="";
+  switch(h%12){
+  case 0:
+    chr="🕛";
+    break;
+  case 1:
+    chr="🕐";
+    break;
+  case 2:
+    chr="🕑";
+    break;
+  case 3:
+    chr="🕒";
+    break;
+  case 4:
+    chr="🕓";
+    break;
+  case 5:
+    chr="🕔";
+    break;
+  case 6:
+    chr="🕕";
+    break;
+  case 7:
+    chr="🕖";
+    break;
+  case 8:
+    chr="🕗";
+    break;
+  case 9:
+    chr="🕘";
+    break;
+  case 10:
+    chr="🕙";
+    break;
+  case 11:
+    chr="🕚";
+    break;
+  default:
+    break;
+  }
+  return chr;
+}
+function getJ(h)
+{
+console.log(h);
+  let chr="";
+  switch(h){
+  case 21:
+  case 22:
+  case 23:
+  case 0:
+  case 1:
+  case 2:
+    chr="深夜";
+    break;
+  case 3:
+  case 4:
+  case 5:
+  case 6:
+  case 7:
+  case 8:
+    chr="あさ";
+    break;
+  case 9:
+  case 10:
+  case 11:
+  case 12:
+  case 13:
+  case 14:
+    chr="日中";
+    break;
+  case 15:
+  case 16:
+  case 17:
+  case 18:
+  case 19:
+  case 20:
+    chr="夕方";
+    break;
+  default:
+    break;
+  }
+  return chr;
+}
+function nt(){x=date0();return ff(x.getHours())+":"+ff(x.getMinutes())+":"+ff(x.getSeconds())+getC(x.getHours())+getJ(x.getHours());}
+function ntcolor(){x=date0();
+  key=x.getMinutes();
+  key=parseInt(key%2)
+  if(key==0){return 'red'}
+  if(key==1){return 'green'}
+}
+
+function bgcolor(){x=date0();
+  if(x.getMinutes()>=30){return 'cyan'}
+  else{return 'yellow'};
+}
+function bodyback(){x=date0();
+  key=x.getHours();
+  key=parseInt(key%2)
+  if(key==0){return 'pink'}
+  if(key==1){return 'blue'}
+}
+
+function showt(){sel=document.querySelectorAll('div')[0];sel.innerText=nt();sel.style.color=ntcolor();sel.style.background=bgcolor();document.body.style.background=bodyback();}
+t1=setInterval(showt,1000/2/global.r);
+
+//clearTimeout(t1);
+
+</script>
+</body>
+</html>
