@@ -31,25 +31,30 @@
 <body>
     <h1>JSON Viewer</h1>
     <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
-    <button onclick="convertJSON()">Convert</button>
+    <button onclick="convertJSON('original')">Original Format</button>
+    <button onclick="convertJSON('enhanced')">Enhanced Format</button>
     <div id="output"></div>
 
     <script>
-        function formatJson(json) {
+        function formatJsonOriginal(json) {
+            return JSON.stringify(json, null, 4);
+        }
+
+        function formatJsonEnhanced(json) {
             if (typeof json !== 'object' || json === null) {
                 return json;
             }
 
             if (Array.isArray(json)) {
                 return json
-                    .map(item => `- ${formatJson(item).replace(/\n/g, '\n  ')}`)
+                    .map(item => `- ${formatJsonEnhanced(item).replace(/\n/g, '\n  ')}`)
                     .join('\n');
             }
 
             return Object.entries(json)
                 .map(([key, value]) => {
                     if (typeof value === 'object' && value !== null) {
-                        return `${key}:\n  ${formatJson(value).replace(/\n/g, '\n  ')}`;
+                        return `${key}:\n  ${formatJsonEnhanced(value).replace(/\n/g, '\n  ')}`;
                     }
                     if (typeof value === 'string' && value.includes('\n')) {
                         return `${key}:\n  ${value.replace(/\n/g, '\n  ')}`;
@@ -59,14 +64,20 @@
                 .join('\n');
         }
 
-        function convertJSON() {
+        function convertJSON(format) {
             const input = document.getElementById('jsonInput').value;
             const outputDiv = document.getElementById('output');
             outputDiv.innerHTML = '';
 
             try {
                 const jsonData = JSON.parse(input);
-                const formattedText = formatJson(jsonData);
+                let formattedText;
+                if (format === 'original') {
+                    formattedText = formatJsonOriginal(jsonData);
+                } else {
+                    formattedText = formatJsonEnhanced(jsonData);
+                }
+
                 const output = document.createElement('div');
                 output.className = 'output';
                 output.textContent = formattedText;
