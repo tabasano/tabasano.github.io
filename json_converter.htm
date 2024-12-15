@@ -47,8 +47,9 @@
     <script>
         function updateNewlineColor() {
             const color = document.getElementById('colorSelector').value;
-            const style = document.querySelector('style');
-            style.innerHTML = style.innerHTML.replace(/\.newline { color: .*?; }/, `.newline { color: ${color}; }`);
+            document.querySelectorAll('.newline').forEach(element => {
+                element.style.color = color;
+            });
         }
 
         function formatJsonOriginal(json) {
@@ -102,6 +103,7 @@
                 output.className = 'output';
                 output.innerHTML = formattedText;
                 outputDiv.appendChild(output);
+                updateNewlineColor(); // Apply color after rendering
             } catch (error) {
                 const errorMessage = document.createElement('div');
                 errorMessage.className = 'error';
