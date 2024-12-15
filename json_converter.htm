@@ -30,7 +30,7 @@
 </head>
 <body>
     <h1>JSON Viewer</h1>
-    <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
+    <textarea id="jsonInput" placeholder="Paste your JSON or JSONL here..."></textarea>
     <button onclick="convertJSON('original')">Original Format</button>
     <button onclick="convertJSON('enhanced')">Enhanced Format</button>
     <div id="output"></div>
@@ -70,12 +70,14 @@
             outputDiv.innerHTML = '';
 
             try {
-                const jsonData = JSON.parse(input);
+                const lines = input.split('\n');
+                const jsonData = lines.map(line => line.trim()).filter(line => line).map(line => JSON.parse(line));
+
                 let formattedText;
                 if (format === 'original') {
-                    formattedText = formatJsonOriginal(jsonData);
+                    formattedText = jsonData.map(formatJsonOriginal).join('\n\n');
                 } else {
-                    formattedText = formatJsonEnhanced(jsonData);
+                    formattedText = jsonData.map(formatJsonEnhanced).join('\n\n');
                 }
 
                 const output = document.createElement('div');
@@ -85,7 +87,7 @@
             } catch (error) {
                 const errorMessage = document.createElement('div');
                 errorMessage.className = 'error';
-                errorMessage.textContent = 'Invalid JSON: ' + error.message;
+                errorMessage.textContent = 'Invalid JSON or JSONL: ' + error.message;
                 outputDiv.appendChild(errorMessage);
             }
         }
