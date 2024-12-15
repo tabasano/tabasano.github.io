@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+        }
+        .output {
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON Viewer</h1>
+    <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
+    <button onclick="convertJSON()">Convert</button>
+    <div id="output"></div>
+
+    <script>
+        function formatJson(json) {
+            if (typeof json !== 'object' || json === null) {
+                return json;
+            }
+
+            if (Array.isArray(json)) {
+                return json
+                    .map(item => `- ${formatJson(item).replace(/\n/g, '\n  ')}`)
+                    .join('\n');
+            }
+
+            return Object.entries(json)
+                .map(([key, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                        return `${key}:\n  ${formatJson(value).replace(/\n/g, '\n  ')}`;
+                    }
+                    if (typeof value === 'string' && value.includes('\n')) {
+                        return `${key}:\n  ${value.replace(/\n/g, '\n  ')}`;
+                    }
+                    return `${key}: ${value}`;
+                })
+                .join('\n');
+        }
+
+        function convertJSON() {
+            const input = document.getElementById('jsonInput').value;
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
+
+            try {
+                const jsonData = JSON.parse(input);
+                const formattedText = formatJson(jsonData);
+                const output = document.createElement('div');
+                output.className = 'output';
+                output.textContent = formattedText;
+                outputDiv.appendChild(output);
+            } catch (error) {
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'error';
+                errorMessage.textContent = 'Invalid JSON: ' + error.message;
+                outputDiv.appendChild(errorMessage);
+            }
+        }
+    </script>
+</body>
+</html>
