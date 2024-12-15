@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Viewer</title>
+    <title>JSON Viewer v1.0</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,9 +42,13 @@
         <option value="green">Green</option>
         <option value="purple">Purple</option>
     </select>
+    <input type="text" id="replaceString" placeholder="Replace \n with...">
+    <button onclick="updateNewlineReplacement()">Apply Replacement</button>
     <div id="output"></div>
 
     <script>
+        let newlineReplacement = '<span class="newline">\\n</span>';
+
         function updateNewlineColor() {
             const color = document.getElementById('colorSelector').value;
             document.querySelectorAll('.newline').forEach(element => {
@@ -52,9 +56,15 @@
             });
         }
 
+        function updateNewlineReplacement() {
+            const replacement = document.getElementById('replaceString').value;
+            newlineReplacement = replacement ? `<span class="newline">${replacement}</span>` : '<span class="newline">\\n</span>';
+            convertJSON('original'); // Re-render with new replacement
+        }
+
         function formatJsonOriginal(json) {
             const jsonString = JSON.stringify(json, null, 4);
-            return jsonString.replace(/\\n/g, '<span class="newline">\\n</span>');
+            return jsonString.replace(/\\n/g, newlineReplacement);
         }
 
         function formatJsonEnhanced(json) {
