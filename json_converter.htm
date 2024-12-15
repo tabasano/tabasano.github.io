@@ -53,7 +53,7 @@
 
         function formatJsonOriginal(json) {
             const jsonString = JSON.stringify(json, null, 4);
-            return jsonString.replace(/\n/g, '<span class="newline">\n</span>');
+            return jsonString.replace(/\\n/g, '<span class="newline">\\n</span>');
         }
 
         function formatJsonEnhanced(json) {
@@ -93,9 +93,9 @@
 
                 let formattedText;
                 if (format === 'original') {
-                    formattedText = jsonData.map(formatJsonOriginal).join('\n\n');
+                    formattedText = jsonData.map(formatJsonOriginal).join('<br><br>');
                 } else {
-                    formattedText = jsonData.map(formatJsonEnhanced).join('\n\n');
+                    formattedText = jsonData.map(formatJsonEnhanced).join('<br><br>');
                 }
 
                 const output = document.createElement('div');
