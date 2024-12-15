@@ -104,9 +104,9 @@
 
                 let formattedText;
                 if (format === 'original') {
-                    formattedText = jsonData.map(formatJsonOriginal).join('<br><br>');
+                    formattedText = jsonData.map(formatJsonOriginal).join('<br><hr>');
                 } else {
-                    formattedText = jsonData.map(formatJsonEnhanced).join('<br><br>');
+                    formattedText = jsonData.map(formatJsonEnhanced).join('<br><hr>');
                 }
 
                 const output = document.createElement('div');
