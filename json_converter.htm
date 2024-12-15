@@ -26,6 +26,9 @@
         .error {
             color: red;
         }
+        .newline {
+            color: blue;
+        }
     </style>
 </head>
 <body>
@@ -33,11 +36,24 @@
     <textarea id="jsonInput" placeholder="Paste your JSON or JSONL here..."></textarea>
     <button onclick="convertJSON('original')">Original Format</button>
     <button onclick="convertJSON('enhanced')">Enhanced Format</button>
+    <select id="colorSelector" onchange="updateNewlineColor()">
+        <option value="blue">Blue</option>
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="purple">Purple</option>
+    </select>
     <div id="output"></div>
 
     <script>
+        function updateNewlineColor() {
+            const color = document.getElementById('colorSelector').value;
+            const style = document.querySelector('style');
+            style.innerHTML = style.innerHTML.replace(/\.newline { color: .*?; }/, `.newline { color: ${color}; }`);
+        }
+
         function formatJsonOriginal(json) {
-            return JSON.stringify(json, null, 4);
+            const jsonString = JSON.stringify(json, null, 4);
+            return jsonString.replace(/\n/g, '<span class="newline">\n</span>');
         }
 
         function formatJsonEnhanced(json) {
@@ -54,10 +70,12 @@
             return Object.entries(json)
                 .map(([key, value]) => {
                     if (typeof value === 'object' && value !== null) {
-                        return `${key}:\n  ${formatJsonEnhanced(value).replace(/\n/g, '\n  ')}`;
+                        return `${key}:
+  ${formatJsonEnhanced(value).replace(/\n/g, '\n  ')}`;
                     }
                     if (typeof value === 'string' && value.includes('\n')) {
-                        return `${key}:\n  ${value.replace(/\n/g, '\n  ')}`;
+                        return `${key}:
+  ${value.replace(/\n/g, '\n  ')}`;
                     }
                     return `${key}: ${value}`;
                 })
@@ -82,7 +100,7 @@
 
                 const output = document.createElement('div');
                 output.className = 'output';
-                output.textContent = formattedText;
+                output.innerHTML = formattedText;
                 outputDiv.appendChild(output);
             } catch (error) {
                 const errorMessage = document.createElement('div');
